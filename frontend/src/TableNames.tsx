@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelectedTableStore } from "./store/selectedTableStore";
+import { useSelectedTableStore } from "./Store";
 
 interface TableNamesProps {
 	tableNames: string[];
@@ -12,8 +12,10 @@ const TableNames: React.FC<TableNamesProps> = (props: TableNamesProps) => {
 		<div className='flex flex-row mt-1'>
 			{props.tableNames.map((tableName) => (
 				<span
-					className={`box-border p-1 px-2 mx-1 bg-slate-700 cursor-pointer rounded-sm ${
-						tableName === selectedTable ? "bg-slate-400" : ""
+					className={`box-border p-1 px-2 mx-1 bg-slate-700  rounded-sm ${
+						tableName === selectedTable
+							? "bg-slate-400 cursor-default"
+							: "cursor-pointer"
 					}`}
 					key={tableName}
 					onClick={() => setSelectedTable(tableName)}

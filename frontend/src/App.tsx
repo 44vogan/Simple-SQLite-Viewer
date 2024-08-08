@@ -1,3 +1,5 @@
+// TODO test
+
 import { useEffect, useState } from "react";
 import { OnFileDrop } from "../wailsjs/runtime/runtime";
 import "./App.css";
@@ -6,17 +8,19 @@ import {
 	ShowWrongFileTypeMessage,
 	GetTableInfo,
 	OpenFile,
+	GetTableData,
 } from "../wailsjs/go/main/App";
 import TableNames from "./TableNames";
 import Table from "./Table";
-import { Columns } from "./types";
-import { useSelectedTableStore } from "./store/selectedTableStore";
+import { Columns, TableData } from "./types";
+import { useSelectedTableStore } from "./Store";
 
 function App() {
 	const [filePath, setFilePath] = useState<string>("");
 	const [tableNames, setTableNames] = useState<string[]>([]);
 	const [columns, setColumns] = useState<Columns[]>([]);
 	const { selectedTable, setSelectedTable } = useSelectedTableStore();
+	const [tableData, setTableData] = useState<TableData<any>>([]);
 
 	useEffect(() => {
 		// listen to drag and drop events
@@ -35,7 +39,7 @@ function App() {
 			let res: { status: string; tables: string[] } = await GetTableNames(
 				filePath
 			);
-			if (res.status === "ok" && res.tables.length > 0) {
+			if (res.status === "ok" && res.tables) {
 				console.log("got table names ->", res.tables);
 				setTableNames(res.tables);
 			} else {
@@ -61,10 +65,27 @@ function App() {
 				setColumns([]);
 			}
 		};
+
+		const getTableData = async () => {
+			let res: { status: string; data: any[] } = await GetTableData(
+				filePath,
+				selectedTable,
+				100
+			);
+			if (res.status === "ok" && res.data) {
+				console.log("got table data ->", res.data);
+				setTableData(res.data);
+			} else {
+				setTableData([]);
+			}
+		};
+
 		if (tableNames.includes(selectedTable)) {
 			getTableInfo();
+			getTableData();
 		} else {
 			setColumns([]);
+			setTableData([]);
 		}
 	}, [selectedTable]);
 
@@ -80,7 +101,7 @@ function App() {
 	return (
 		<div
 			id='App'
-			className='dropable text-white box-border inset-0 h-screen w-screen bg-black bg-opacity-90 flex flex-col items-center justify-start'
+			className='dropable box-border inset-0 h-screen w-screen max-w-full  flex flex-col items-center justify-start'
 		>
 			<div
 				onClick={() => openFile()}
@@ -93,7 +114,7 @@ function App() {
 			{filePath && (
 				<div className='flex flex-col items-center justify-start'>
 					<TableNames tableNames={tableNames} />
-					<Table columns={columns} />
+					<Table columns={columns} tableData={tableData} />
 				</div>
 			)}
 		</div>
