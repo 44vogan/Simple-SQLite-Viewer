@@ -18,7 +18,16 @@ const useglobalRowLimit = create<globalRowLimit>()((set) => ({
     setGlobalRowLimit: (n) => set((state) => ({ globalRowLimit: n })),
 }));
 
+type globalShowQueryExec = {
+    globalShowQueryExec: boolean;
+    setGlobalShowQueryExec: (b: boolean) => void;
+};
+const useGlobalShowQueryExec = create<globalShowQueryExec>()((set) => ({
+    globalShowQueryExec: false,
+    setGlobalShowQueryExec: (b) => set((state) => ({ globalShowQueryExec: b })),
+}));
 
 
 
-export { useSelectedTableStore, useglobalRowLimit };
+
+export { useSelectedTableStore, useglobalRowLimit, useGlobalShowQueryExec };

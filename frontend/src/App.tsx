@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { OnFileDrop } from "../wailsjs/runtime/runtime";
 import "./App.css";
-import { CircleStackIcon } from "@heroicons/react/24/solid";
+import { CircleStackIcon, CommandLineIcon } from "@heroicons/react/24/solid";
 import {
 	GetTableNames,
 	ShowWrongFileTypeMessage,
@@ -14,7 +14,11 @@ import {
 import TableNames from "./TableNames";
 import Table from "./Table";
 import { Columns, TableData } from "./types";
-import { useSelectedTableStore, useglobalRowLimit } from "./Store";
+import {
+	useSelectedTableStore,
+	useglobalRowLimit,
+	useGlobalShowQueryExec,
+} from "./Store";
 import { Limit } from "./Limit";
 import { RawQueryExec } from "./RawQueryExec";
 
@@ -25,7 +29,8 @@ function App() {
 	const { selectedTable, setSelectedTable } = useSelectedTableStore();
 	const { globalRowLimit, setGlobalRowLimit } = useglobalRowLimit();
 	const [tableData, setTableData] = useState<TableData<any>>([]);
-
+	const { globalShowQueryExec, setGlobalShowQueryExec } =
+		useGlobalShowQueryExec();
 	useEffect(() => {
 		// listen to drag and drop events
 		OnFileDrop((x, y, file) => {
@@ -126,6 +131,7 @@ function App() {
 					{filePath === "" ? "drop or click to open  a .db file" : filePath}
 				</span>
 			</div>
+
 			{filePath && (
 				<div className='flex flex-col items-center justify-start'>
 					<div className='flex items-center justify-between'>
@@ -135,7 +141,14 @@ function App() {
 					<Table columns={columns} tableData={tableData} />
 				</div>
 			)}
-			<RawQueryExec />
+			{filePath && (
+				<CommandLineIcon
+					title='Execute Query'
+					className='w-9 h-9 mr-2 fixed top-5 right-5 cursor-pointer transition duration-500 ease-in-out opacity-80 hover:opacity-100'
+					onClick={() => setGlobalShowQueryExec(!globalShowQueryExec)}
+				/>
+			)}
+			{filePath && globalShowQueryExec && <RawQueryExec filePath={filePath} />}
 		</div>
 	);
 }
