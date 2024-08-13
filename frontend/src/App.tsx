@@ -38,7 +38,7 @@ function App() {
 			if (file[0].endsWith(".db")) {
 				setFilePath(() => file[0]);
 			} else {
-				ShowWrongFileTypeMessage();
+				// ShowWrongFileTypeMessage();
 			}
 		}, true);
 	}, []);
