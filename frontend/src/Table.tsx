@@ -11,15 +11,17 @@ const Table = ({ columns, tableData }: TableProps) => {
 	return (
 		<div>
 			{columns.length > 0 && (
-				<table className='h-fit text-left p-1'>
+				<table className='h-fit text-left p-1 min-w-fit'>
 					<thead>
 						<tr>
 							{columns.map((column) => (
 								<th
 									key={column.name}
-									className='border-x sticky top-0 bg-slate-950 '
+									className='p-2 border-x-2 border-slate-700 sticky top-0 bg-slate-950 text-nowrap px-2'
 								>
-									{column.name} : {column.dataType}
+									<span>
+										{column.name} : {column.dataType}
+									</span>
 								</th>
 							))}
 						</tr>
@@ -28,9 +30,11 @@ const Table = ({ columns, tableData }: TableProps) => {
 					{tableData.length > 0 && (
 						<tbody>
 							{tableData.map((data, index) => (
-								<tr key={index} className='bg-slate-900   even:bg-slate-950'>
+								<tr key={index} className='bg-slate-700   even:bg-slate-950'>
 									{columns.map((column, index) => (
-										<td key={index}>{data[column.name]}</td>
+										<td key={index} className='  p-2'>
+											{data[column.name]}
+										</td>
 									))}
 								</tr>
 							))}

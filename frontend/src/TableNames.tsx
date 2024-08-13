@@ -9,12 +9,12 @@ const TableNames: React.FC<TableNamesProps> = (props: TableNamesProps) => {
 	const { selectedTable, setSelectedTable } = useSelectedTableStore();
 
 	return (
-		<div className='flex flex-row mt-1'>
+		<div className='flex flex-row my-1'>
 			{props.tableNames.map((tableName) => (
 				<span
-					className={`box-border p-1 px-2 mx-1 bg-slate-700  rounded-sm ${
+					className={`box-border py-1 px-2  m-2 bg-slate-800  rounded-md ${
 						tableName === selectedTable
-							? "bg-slate-400 cursor-default"
+							? "bg-slate-400 cursor-default  border-cyan-50 border-2"
 							: "cursor-pointer"
 					}`}
 					key={tableName}

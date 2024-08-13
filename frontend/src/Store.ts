@@ -9,8 +9,16 @@ const useSelectedTableStore = create<selectedTableStore>()((set) => ({
     setSelectedTable: (sT) => set((state) => ({ selectedTable: sT })),
 }));
 
+type globalRowLimit = {
+    globalRowLimit: number;
+    setGlobalRowLimit: (n: number) => void;
+};
+const useglobalRowLimit = create<globalRowLimit>()((set) => ({
+    globalRowLimit: 10,
+    setGlobalRowLimit: (n) => set((state) => ({ globalRowLimit: n })),
+}));
 
 
 
 
-export { useSelectedTableStore };
+export { useSelectedTableStore, useglobalRowLimit };

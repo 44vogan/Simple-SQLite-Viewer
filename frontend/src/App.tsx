@@ -1,8 +1,9 @@
-// TODO test
+// TODO how to make exec query?
 
 import { useEffect, useState } from "react";
 import { OnFileDrop } from "../wailsjs/runtime/runtime";
 import "./App.css";
+import { CircleStackIcon } from "@heroicons/react/24/solid";
 import {
 	GetTableNames,
 	ShowWrongFileTypeMessage,
@@ -13,13 +14,16 @@ import {
 import TableNames from "./TableNames";
 import Table from "./Table";
 import { Columns, TableData } from "./types";
-import { useSelectedTableStore } from "./Store";
+import { useSelectedTableStore, useglobalRowLimit } from "./Store";
+import { Limit } from "./Limit";
+import { RawQueryExec } from "./RawQueryExec";
 
 function App() {
 	const [filePath, setFilePath] = useState<string>("");
 	const [tableNames, setTableNames] = useState<string[]>([]);
 	const [columns, setColumns] = useState<Columns[]>([]);
 	const { selectedTable, setSelectedTable } = useSelectedTableStore();
+	const { globalRowLimit, setGlobalRowLimit } = useglobalRowLimit();
 	const [tableData, setTableData] = useState<TableData<any>>([]);
 
 	useEffect(() => {
@@ -53,6 +57,7 @@ function App() {
 	}, [filePath]);
 
 	useEffect(() => {
+		console.log("[selectedTable,globalRowLimit] effect");
 		const getTableInfo = async () => {
 			let res: { status: string; columns: Columns[] } = await GetTableInfo(
 				filePath,
@@ -70,7 +75,7 @@ function App() {
 			let res: { status: string; data: any[] } = await GetTableData(
 				filePath,
 				selectedTable,
-				100
+				globalRowLimit
 			);
 			if (res.status === "ok" && res.data) {
 				console.log("got table data ->", res.data);
@@ -80,14 +85,21 @@ function App() {
 			}
 		};
 
+		let timer: any;
 		if (tableNames.includes(selectedTable)) {
-			getTableInfo();
-			getTableData();
+			timer = setTimeout(() => {
+				getTableInfo();
+				getTableData();
+			}, 100);
 		} else {
 			setColumns([]);
 			setTableData([]);
 		}
-	}, [selectedTable]);
+		return () => {
+			clearTimeout(timer);
+			console.log("[selectedTable,globalRowLimit] cleanup");
+		};
+	}, [selectedTable, globalRowLimit]);
 
 	const openFile = async () => {
 		const res = await OpenFile();
@@ -101,22 +113,29 @@ function App() {
 	return (
 		<div
 			id='App'
-			className='dropable box-border inset-0 h-screen w-screen max-w-full  flex flex-col items-center justify-start'
+			className='dropable box-border inset-0 h-screen w-screen max-w-full  flex flex-col items-center justify-start px-3'
 		>
 			<div
 				onClick={() => openFile()}
-				className={`box-border mt-1 p-2 px-5 rounded-md bg-slate-400 w-fit cursor-pointer transition-all ${
-					filePath === "" ? "translate-y-40" : ""
+				className={`flex items-center box-border mt-1 p-2 px-5 rounded-md bg-slate-800 w-fit cursor-pointer transition-all ${
+					filePath === "" ? "translate-y-48" : "translate-y-0"
 				}`}
 			>
-				{filePath === "" ? "drop or click to open  a .db file" : filePath}
+				<CircleStackIcon className='w-5 h-5 mr-2' />
+				<span>
+					{filePath === "" ? "drop or click to open  a .db file" : filePath}
+				</span>
 			</div>
 			{filePath && (
 				<div className='flex flex-col items-center justify-start'>
-					<TableNames tableNames={tableNames} />
+					<div className='flex items-center justify-between'>
+						<Limit />
+						<TableNames tableNames={tableNames} />
+					</div>
 					<Table columns={columns} tableData={tableData} />
 				</div>
 			)}
+			<RawQueryExec />
 		</div>
 	);
 }
