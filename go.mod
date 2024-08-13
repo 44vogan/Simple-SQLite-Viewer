@@ -49,4 +49,4 @@ require (
 	modernc.org/token v1.1.0 // indirect
 )
 
-// replace github.com/wailsapp/wails/v2 => E:\Wails-apps\learn-basic\wails\v2
+// replace github.com/wailsapp/wails/v2 => E:\Wails-apps\learn-basic\wails\v2  //fix drop file bug
